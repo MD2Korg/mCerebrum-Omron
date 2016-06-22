@@ -1,0 +1,8 @@
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <EditTextPreference
+        android:key="deviceId"
+        android:title="DeviceID"
+        android:icon="@drawable/ic_id_teal_48dp" />
+    <PreferenceCategory android:title="Available Devices">
+    </PreferenceCategory>
+</PreferenceScreen>

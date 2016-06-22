@@ -1,0 +1,20 @@
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <PreferenceCategory android:title="Bluetooth"/>
+    <Preference
+        android:key="key_bluetooth_pair"
+        android:icon="@drawable/ic_pair_teal_50dp"
+        android:title="Pair Device" />
+    <PreferenceCategory
+        android:key="key_device_configured"
+        android:title="Configured Devices"/>
+    <PreferenceCategory
+        android:title="Add Devices" />
+    <Preference
+        android:key="key_blood_pressure_add"
+        android:icon="@drawable/ic_add_teal_48dp"
+        android:title="Add Blood Pressure Device" />
+    <Preference
+        android:key="key_weight_scale_add"
+        android:icon="@drawable/ic_add_teal_48dp"
+        android:title="Add Weight Scale Device" />
+</PreferenceScreen>
