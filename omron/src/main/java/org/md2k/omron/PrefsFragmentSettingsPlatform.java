@@ -21,6 +21,7 @@ import android.widget.Toast;
 
 import org.md2k.datakitapi.source.METADATA;
 import org.md2k.datakitapi.source.platform.PlatformType;
+import org.md2k.omron.bluetooth.BlueToothCallBack;
 import org.md2k.omron.bluetooth.MyBlueTooth;
 
 import java.util.ArrayList;
@@ -73,7 +74,17 @@ public class PrefsFragmentSettingsPlatform extends PreferenceFragment {
         }else if(platformType.equals(PlatformType.OMRON_WEIGHT_SCALE)){
             uuid=Constants.WEIGHT_SCALE_SERVICE_UUID;
         }
-        myBlueTooth = new MyBlueTooth(getActivity());
+        myBlueTooth = new MyBlueTooth(getActivity(), new BlueToothCallBack() {
+            @Override
+            public void onConnected() {
+
+            }
+
+            @Override
+            public void onDisconnected() {
+                getActivity().finish();
+            }
+        });
         handler = new Handler();
         addPreferencesFromResource(R.xml.pref_settings_platform);
         setupListViewDevices();
@@ -257,6 +268,7 @@ public class PrefsFragmentSettingsPlatform extends PreferenceFragment {
             isScanning = false;
             myBlueTooth.scanStop(mLeScanCallback);
         }
+        myBlueTooth.close();
         super.onDestroy();
     }
 

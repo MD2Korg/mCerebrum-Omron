@@ -61,18 +61,48 @@ public class MyBlueTooth {
     boolean isConnected=false;
     private final String LIST_NAME = "NAME";
     private final String LIST_UUID = "UUID";
+    private BlueToothCallBack blueToothCallBack;
 
     private Context context;
 
-    public MyBlueTooth(Context context) {
+    public MyBlueTooth(Context context, BlueToothCallBack blueToothCallBack) {
         try {
             this.context = context;
             bluetoothManager = (BluetoothManager) context.getSystemService(Context.BLUETOOTH_SERVICE);
             mBluetoothAdapter = bluetoothManager.getAdapter();
-        }catch (Exception e){
+            this.blueToothCallBack = blueToothCallBack;
+            if(blueToothCallBack!=null)
+                context.registerReceiver(mReceiver, new IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED));
+
+        }catch (Exception ignored){
 
         }
     }
+    public final BroadcastReceiver mReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            final String action = intent.getAction();
+            if(blueToothCallBack==null) return;
+            if (action.equals(BluetoothAdapter.ACTION_STATE_CHANGED)) {
+                final int state = intent.getIntExtra(BluetoothAdapter.EXTRA_STATE,
+                        BluetoothAdapter.ERROR);
+                switch (state) {
+                    case BluetoothAdapter.STATE_OFF:
+                        blueToothCallBack.onDisconnected();
+                        break;
+                    case BluetoothAdapter.STATE_ON:
+                        blueToothCallBack.onConnected();
+                        break;
+                    case BluetoothAdapter.STATE_TURNING_ON:
+                        break;
+                    case BluetoothAdapter.STATE_TURNING_OFF:
+                        break;
+                    default:
+                        break;
+                }
+            }
+        }
+    };
 
     public void enable() {
         if (mBluetoothAdapter == null) return;
@@ -248,5 +278,11 @@ public class MyBlueTooth {
             gattCharacteristicData.add(gattCharacteristicGroupData);
         }
     }
+    public void close() {
+        try {
+            context.unregisterReceiver(mReceiver);
+        }catch (Exception ignored){
 
+        }
+    }
 }

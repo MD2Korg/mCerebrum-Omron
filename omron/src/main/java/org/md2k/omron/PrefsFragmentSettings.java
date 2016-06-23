@@ -18,6 +18,7 @@ import android.widget.Toast;
 
 import org.md2k.datakitapi.source.METADATA;
 import org.md2k.datakitapi.source.platform.PlatformType;
+import org.md2k.omron.bluetooth.BlueToothCallBack;
 import org.md2k.omron.bluetooth.MyBlueTooth;
 import org.md2k.omron.devices.Devices;
 import org.md2k.utilities.UI.AlertDialogs;
@@ -60,7 +61,17 @@ public class PrefsFragmentSettings extends PreferenceFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        myBlueTooth = new MyBlueTooth(getActivity());
+        myBlueTooth = new MyBlueTooth(getActivity(), new BlueToothCallBack() {
+            @Override
+            public void onConnected() {
+
+            }
+
+            @Override
+            public void onDisconnected() {
+                getActivity().finish();
+            }
+        });
         devices = new Devices(getActivity());
         if (!myBlueTooth.hasSupport()) {
             Toast.makeText(getActivity(), "Bluetooth LE is not supported", Toast.LENGTH_SHORT).show();
@@ -242,5 +253,10 @@ public class PrefsFragmentSettings extends PreferenceFragment {
                 return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+    @Override
+    public void onDestroy(){
+        myBlueTooth.close();
+        super.onDestroy();
     }
 }
