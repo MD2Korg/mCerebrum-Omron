@@ -157,10 +157,13 @@ public class PrefsFragmentSettings extends PreferenceFragment {
             preference.setTitle(deviceId);
         else
             preference.setTitle(name + " (" + deviceId + ")");
-        if (platformType.equals(PlatformType.OMRON_BLOOD_PRESSURE))
+        if (platformType.equals(PlatformType.OMRON_BLOOD_PRESSURE)) {
             preference.setIcon(R.drawable.ic_blood_pressure_teal_48dp);
+            preference.setSummary("Blood Pressure Device");
+        }
         else if (platformType.equals(PlatformType.OMRON_WEIGHT_SCALE)) {
             preference.setIcon(R.drawable.ic_weight_scale_48dp);
+            preference.setSummary("Weight Scale Device");
         }
         preference.setOnPreferenceClickListener(preferenceListenerConfigured());
         category.addPreference(preference);

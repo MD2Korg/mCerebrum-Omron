@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent">
+	<include
+		android:id="@+id/layout_three_button"
+		layout="@layout/layout_three_button" />
+
+	<LinearLayout
+		android:id="@+id/layout_preference_fragment"
+		android:layout_width="match_parent"
+		android:layout_height="match_parent"
+		android:layout_above="@id/layout_three_button"
+		android:orientation="vertical">
+
+		<LinearLayout
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:layout_marginBottom="20dp"
+			android:orientation="vertical">
+
+			<TextView
+				android:id="@+id/textView_weight"
+				android:layout_width="match_parent"
+				android:layout_height="match_parent"
+				android:gravity="center"
+				android:text="Please step on to the scale"
+				android:textAppearance="?android:attr/textAppearanceMedium"
+				android:textColor="@color/red_A700"
+				android:textStyle="bold"
+				android:layout_margin="10dp" />
+
+			<Button
+				android:id="@+id/button_done"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:text="Done" />
+		</LinearLayout>
+
+		<ScrollView
+			android:layout_width="match_parent"
+			android:layout_height="match_parent">
+
+			<TableLayout
+				android:id="@+id/tlShowInfo"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:stretchColumns="1"
+				android:background="#eeeeee" >
+
+				<TableRow
+					android:background="#cccccc" >
+
+					<TextView
+						android:id="@+id/tvInfoLabel"
+						android:layout_width="match_parent"
+						android:layout_height="wrap_content"
+						android:padding="10dp"
+						android:gravity="center"
+						android:layout_span="2"
+						android:text="Weight Scale" />
+				</TableRow>
+
+				<TableRow
+					android:padding="5dp" >
+					<TextView
+						android:id="@+id/tvTimestampLabel"
+						android:layout_width="wrap_content"
+						android:layout_height="wrap_content"
+						android:text="Timestamp" />
+					<TextView
+						android:id="@+id/tvTimestampValue"
+						android:layout_width="wrap_content"
+						android:layout_height="wrap_content"
+						android:gravity="center"
+						android:text="----" />
+				</TableRow>
+
+				<TableRow
+					android:padding="5dp" >
+
+					<TextView
+						android:id="@+id/tvWeightLabel"
+						android:layout_width="wrap_content"
+						android:layout_height="wrap_content"
+						android:text="Weight" />
+					<TextView
+						android:id="@+id/tvWeightValue"
+						android:layout_width="wrap_content"
+						android:layout_height="wrap_content"
+						android:gravity="center"
+						android:text="----" />
+				</TableRow>
+
+				<TableRow
+					android:padding="5dp"
+					android:visibility="gone" >
+
+					<TextView
+						android:id="@+id/tvUserIDLabel"
+						android:layout_width="wrap_content"
+						android:layout_height="wrap_content"
+						android:text="User ID" />
+					<TextView
+						android:id="@+id/tvUserIDValue"
+						android:layout_width="wrap_content"
+						android:layout_height="wrap_content"
+						android:gravity="center"
+						android:text="----" />
+				</TableRow>
+
+				<TableRow
+					android:layout_height="10dp"
+					android:padding="5dp"
+					android:background="#00000000">
+					<TextView android:layout_height="8dp" />
+				</TableRow>
+
+				<TableRow android:background="#cccccc">
+					<TextView
+						android:id="@+id/tvDevInfoLabel"
+						android:layout_width="match_parent"
+						android:layout_height="wrap_content"
+						android:padding="10dp"
+						android:gravity="center"
+						android:layout_span="2"
+						android:text="Device Information" />
+				</TableRow>
+
+				<TableRow
+					android:padding="5dp" >
+					<TextView
+						android:id="@+id/tvLocalNameValue"
+						android:layout_width="match_parent"
+						android:layout_height="wrap_content"
+						android:gravity="center"
+						android:layout_span="2"
+						android:text="----" />
+				</TableRow>
+
+				<TableRow
+					android:padding="5dp" >
+					<TextView
+						android:id="@+id/tvBDAddrLabel"
+						android:layout_width="wrap_content"
+						android:layout_height="wrap_content"
+						android:text="Address" />
+					<TextView
+						android:id="@+id/tvBDAddrValue"
+						android:layout_width="wrap_content"
+						android:layout_height="wrap_content"
+						android:gravity="center"
+						android:text="----" />
+				</TableRow>
+
+				<TableRow
+					android:padding="5dp" >
+					<TextView
+						android:id="@+id/tvBatteryLevelLabel"
+						android:layout_width="wrap_content"
+						android:layout_height="wrap_content"
+						android:text="Battery" />
+					<TextView
+						android:id="@+id/tvBatteryLevelValue"
+						android:layout_width="wrap_content"
+						android:layout_height="wrap_content"
+						android:gravity="center"
+						android:text="----" />
+				</TableRow>
+
+				<TableRow
+					android:padding="5dp" >
+					<TextView
+						android:id="@+id/tvCurrentTimeLabel"
+						android:layout_width="wrap_content"
+						android:layout_height="wrap_content"
+						android:text="Time" />
+					<TextView
+						android:id="@+id/tvCurrentTimeValue"
+						android:layout_width="wrap_content"
+						android:layout_height="wrap_content"
+						android:gravity="center"
+						android:text="----" />
+				</TableRow>
+
+			</TableLayout>
+		</ScrollView>
+	</LinearLayout>
+
+	<ListView
+		android:id="@+id/lvDeviceList"
+		android:layout_width="match_parent"
+		android:layout_height="match_parent"
+		android:layout_alignParentTop="true"
+		android:layout_alignParentLeft="true"
+		android:visibility="gone" >
+	</ListView>
+
+</RelativeLayout>

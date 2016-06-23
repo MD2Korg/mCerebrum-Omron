@@ -44,6 +44,18 @@
             android:exported="true"
             android:label="Settings: Omron"
             android:screenOrientation="portrait"/>
+        <activity
+            android:name=".ActivityBloodPressure"
+            android:enabled="true"
+            android:exported="true"
+            android:label="Blood Pressure"
+            android:screenOrientation="portrait"/>
+        <activity
+            android:name=".ActivityWeightScale"
+            android:enabled="true"
+            android:exported="true"
+            android:label="Weight Scale"
+            android:screenOrientation="portrait"/>
     </application>
 
 </manifest>

@@ -61,15 +61,12 @@ public class ActivityMain extends AppCompatActivity {
         gridview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Intent intent = new Intent();
-//                Log.d(TAG, "item clicked...packageName="+items.get(position).getPackage_name());
-//                intent.setClassName("org.md2k.ema_scheduler","org.md2k.ema_scheduler.ActivityTest");
-//                intent.putExtra("package_name", items.get(position).getPackage_name());
-//                startActivity(intent);
-
-//                Intent launchIntent = getPackageManager().getLaunchIntentForPackage(items.get(position).getPackage_name());
-//                startActivity(launchIntent);
-//                Toast.makeText(MainActivity.this, "Position: " + position, Toast.LENGTH_SHORT).show();
+                Intent intent;
+                if(items.get(position).getPlatformType().equals(PlatformType.OMRON_BLOOD_PRESSURE))
+                    intent=new Intent(ActivityMain.this, ActivityBloodPressure.class);
+                else
+                    intent=new Intent(ActivityMain.this, ActivityWeightScale.class);
+                startActivity(intent);
             }
         });
 
