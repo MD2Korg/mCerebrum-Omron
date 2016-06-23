@@ -170,12 +170,27 @@ public class PrefsFragmentSettingsPlatform extends PreferenceFragment {
                 else {
                     Intent returnIntent = new Intent();
                     returnIntent.putExtra(PlatformType.class.getSimpleName(), platformType);
-                    returnIntent.putExtra(METADATA.DEVICE_ID, deviceId);
+                    returnIntent.putExtra(METADATA.DEVICE_ID, getDeviceId(deviceId));
+                    returnIntent.putExtra(METADATA.NAME, getName((deviceId)));
                     getActivity().setResult(getActivity().RESULT_OK, returnIntent);
                     getActivity().finish();
                 }
             }
         });
+    }
+    private String getName(String str){
+        if(str.endsWith(")")){
+            String[] arr = str.split(" ");
+            return arr[0];
+        }else
+            return null;
+    }
+    private String getDeviceId(String str){
+        if(str.endsWith(")")){
+            String[] arr = deviceId.split(" ");
+            return arr[1].substring(1,arr[1].length()-1);
+        }else
+            return str;
     }
 
     private void setCancelButton() {

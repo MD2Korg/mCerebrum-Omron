@@ -19,7 +19,10 @@ import android.widget.Toast;
 import org.md2k.datakitapi.source.METADATA;
 import org.md2k.datakitapi.source.platform.PlatformType;
 import org.md2k.omron.bluetooth.MyBlueTooth;
+import org.md2k.omron.devices.Devices;
 import org.md2k.utilities.UI.AlertDialogs;
+
+import java.io.IOException;
 
 /**
  * Copyright (c) 2015, The University of Memphis, MD2K Center
@@ -51,12 +54,14 @@ public class PrefsFragmentSettings extends PreferenceFragment {
     private static final String TAG = PrefsFragmentSettings.class.getSimpleName();
     private static final int ADD_DEVICE = 1;
     MyBlueTooth myBlueTooth;
+    Devices devices;
 
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         myBlueTooth = new MyBlueTooth(getActivity());
+        devices = new Devices(getActivity());
         if (!myBlueTooth.hasSupport()) {
             Toast.makeText(getActivity(), "Bluetooth LE is not supported", Toast.LENGTH_SHORT).show();
             getActivity().finish();
@@ -65,8 +70,18 @@ public class PrefsFragmentSettings extends PreferenceFragment {
             setPreferenceBluetoothPair();
             setPreferenceScreenBloodPressureAdd();
             setPreferenceScreenWeightScaleAdd();
+            setPreferenceScreenConfigured();
             setSaveButton();
             setCancelButton();
+        }
+    }
+
+    void setPreferenceScreenConfigured() {
+        for (int i = 0; i < devices.size(); i++) {
+            String platformType = devices.get(i).getPlatformType();
+            String name = devices.get(i).getName();
+            String deviceId = devices.get(i).getDeviceId();
+            addToConfiguredList(platformType, deviceId, name);
         }
     }
 
@@ -102,6 +117,7 @@ public class PrefsFragmentSettings extends PreferenceFragment {
             }
         });
     }
+
     private void setPreferenceScreenWeightScaleAdd() {
         Preference preference = findPreference("key_weight_scale_add");
         preference.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
@@ -122,26 +138,28 @@ public class PrefsFragmentSettings extends PreferenceFragment {
                 Log.d(TAG, "onActivityResult(): result ok");
                 String platformType = data.getStringExtra(PlatformType.class.getSimpleName());
                 String deviceId = data.getStringExtra(METADATA.DEVICE_ID);
-                addToConfiguredList(platformType, deviceId);
+                String name = data.getStringExtra(METADATA.NAME);
+                if (devices.find(deviceId) != null)
+                    Toast.makeText(getActivity(), "Error: Device is already configured...", Toast.LENGTH_SHORT).show();
+                else {
+                    devices.add(platformType, deviceId, name);
+                    addToConfiguredList(platformType, deviceId, name);
+                }
             }
         }
     }
 
-    private void addToConfiguredList(String platformType, String deviceId) {
+    private void addToConfiguredList(String platformType, String deviceId, String name) {
         PreferenceCategory category = (PreferenceCategory) findPreference("key_device_configured");
-        for (int i = 0; i < category.getPreferenceCount(); i++) {
-            Preference preference = category.getPreference(i);
-            if (preference.getKey().equals(deviceId)) {
-                Toast.makeText(getActivity(), "Error: Device is already configured...", Toast.LENGTH_SHORT).show();
-                return;
-            }
-        }
         Preference preference = new Preference(getActivity());
         preference.setKey(deviceId);
-        preference.setTitle(deviceId);
-        if(platformType.equals(PlatformType.OMRON_BLOOD_PRESSURE))
+        if (name == null || name.length() == 0)
+            preference.setTitle(deviceId);
+        else
+            preference.setTitle(name + " (" + deviceId + ")");
+        if (platformType.equals(PlatformType.OMRON_BLOOD_PRESSURE))
             preference.setIcon(R.drawable.ic_blood_pressure_teal_48dp);
-        else if(platformType.equals(PlatformType.OMRON_WEIGHT_SCALE)){
+        else if (platformType.equals(PlatformType.OMRON_WEIGHT_SCALE)) {
             preference.setIcon(R.drawable.ic_weight_scale_48dp);
         }
         preference.setOnPreferenceClickListener(preferenceListenerConfigured());
@@ -162,6 +180,7 @@ public class PrefsFragmentSettings extends PreferenceFragment {
                                 Preference preference = category.getPreference(i);
                                 if (preference.getKey().equals(deviceId)) {
                                     category.removePreference(preference);
+                                    devices.delete(deviceId);
                                     return;
                                 }
                             }
@@ -190,7 +209,13 @@ public class PrefsFragmentSettings extends PreferenceFragment {
         button.setText("Save");
         button.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                //TODO: save config file
+                try {
+                    devices.writeDataSourceToFile();
+                    Toast.makeText(getActivity(), "Saved...", Toast.LENGTH_SHORT).show();
+                    getActivity().finish();
+                } catch (Exception e) {
+                    Toast.makeText(getActivity(), "Error: Could not Save...", Toast.LENGTH_SHORT).show();
+                }
             }
         });
     }
