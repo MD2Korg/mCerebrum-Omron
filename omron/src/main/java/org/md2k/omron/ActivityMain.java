@@ -11,7 +11,6 @@ import android.widget.AdapterView;
 import android.widget.GridView;
 
 import org.md2k.datakitapi.source.platform.PlatformType;
-import org.md2k.utilities.Report.Log;
 import org.md2k.utilities.UI.ActivityAbout;
 import org.md2k.utilities.UI.ActivityCopyright;
 

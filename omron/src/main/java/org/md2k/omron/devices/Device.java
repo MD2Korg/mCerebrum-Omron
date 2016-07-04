@@ -45,7 +45,7 @@ public class Device {
     protected Context context;
     protected String name;
     protected ArrayList<Sensor> sensors;
-    MyBlueTooth myBlueTooth;
+//    MyBlueTooth myBlueTooth;
 
     public Device(Context context, String platformType, String deviceId, String name) {
         this.context = context;
@@ -53,7 +53,7 @@ public class Device {
         this.deviceId = deviceId;
         this.name=name;
         sensors =new ArrayList<>();
-        myBlueTooth=new MyBlueTooth(context, null);
+//        myBlueTooth=new MyBlueTooth(context, null);
     }
     public void register() throws DataKitException {
         for (int i = 0; i < sensors.size(); i++) {
@@ -83,5 +83,11 @@ public class Device {
 
     public ArrayList<Sensor> getSensors() {
         return sensors;
+    }
+    public Sensor getSensors(String dataSourceType) {
+        for(int i=0;i<sensors.size();i++)
+            if(sensors.get(i).equals(dataSourceType))
+        return sensors.get(i);
+        return null;
     }
 }

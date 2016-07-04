@@ -33,8 +33,8 @@ public class HeartRate extends Sensor {
     }
     ArrayList<HashMap<String, String>> createDataDescriptors() {
         ArrayList<HashMap<String, String>> dataDescriptors = new ArrayList<>();
-        dataDescriptors.add(createDataDescriptor("Heart Rate",0,255,"bpm"));
-        dataDescriptors.add(createDataDescriptor("Irregular Pulse",0,1,"true/false"));
+        dataDescriptors.add(createDataDescriptor("Heart Rate",0,255,"bpm", double.class.getSimpleName()));
+        dataDescriptors.add(createDataDescriptor("Irregular Pulse",0,1,"true/false", double.class.getSimpleName()));
         return dataDescriptors;
     }
 }

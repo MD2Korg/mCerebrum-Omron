@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Message;
 import android.preference.Preference;
 import android.preference.PreferenceCategory;
 import android.preference.PreferenceFragment;
@@ -18,12 +19,11 @@ import android.widget.Toast;
 
 import org.md2k.datakitapi.source.METADATA;
 import org.md2k.datakitapi.source.platform.PlatformType;
-import org.md2k.omron.bluetooth.BlueToothCallBack;
 import org.md2k.omron.bluetooth.MyBlueTooth;
+import org.md2k.omron.bluetooth.OnConnectionListener;
+import org.md2k.omron.bluetooth.OnReceiveListener;
 import org.md2k.omron.devices.Devices;
 import org.md2k.utilities.UI.AlertDialogs;
-
-import java.io.IOException;
 
 /**
  * Copyright (c) 2015, The University of Memphis, MD2K Center
@@ -61,31 +61,38 @@ public class PrefsFragmentSettings extends PreferenceFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        myBlueTooth = new MyBlueTooth(getActivity(), new BlueToothCallBack() {
-            @Override
-            public void onConnected() {
-
-            }
-
-            @Override
-            public void onDisconnected() {
-                getActivity().finish();
-            }
-        });
+        myBlueTooth = new MyBlueTooth(getActivity(), onConnectionListener, onReceiveListener);
         devices = new Devices(getActivity());
-        if (!myBlueTooth.hasSupport()) {
-            Toast.makeText(getActivity(), "Bluetooth LE is not supported", Toast.LENGTH_SHORT).show();
-            getActivity().finish();
-        } else {
-            addPreferencesFromResource(R.xml.pref_settings_general);
-            setPreferenceBluetoothPair();
-            setPreferenceScreenBloodPressureAdd();
-            setPreferenceScreenWeightScaleAdd();
-            setPreferenceScreenConfigured();
-            setSaveButton();
-            setCancelButton();
-        }
     }
+    OnConnectionListener onConnectionListener=new OnConnectionListener() {
+        @Override
+        public void onConnected() {
+            if (!myBlueTooth.hasSupport()) {
+                Toast.makeText(getActivity(), "Bluetooth LE is not supported", Toast.LENGTH_SHORT).show();
+                getActivity().finish();
+            } else {
+                addPreferencesFromResource(R.xml.pref_settings_general);
+                setPreferenceBluetoothPair();
+                setPreferenceScreenBloodPressureAdd();
+                setPreferenceScreenWeightScaleAdd();
+                setPreferenceScreenConfigured();
+                setSaveButton();
+                setCancelButton();
+            }
+        }
+
+        @Override
+        public void onDisconnected() {
+
+        }
+    };
+
+    OnReceiveListener onReceiveListener = new OnReceiveListener() {
+        @Override
+        public void onReceived(Message msg) {
+
+        }
+    };
 
     void setPreferenceScreenConfigured() {
         for (int i = 0; i < devices.size(); i++) {
@@ -171,8 +178,7 @@ public class PrefsFragmentSettings extends PreferenceFragment {
         if (platformType.equals(PlatformType.OMRON_BLOOD_PRESSURE)) {
             preference.setIcon(R.drawable.ic_blood_pressure_teal_48dp);
             preference.setSummary("Blood Pressure Device");
-        }
-        else if (platformType.equals(PlatformType.OMRON_WEIGHT_SCALE)) {
+        } else if (platformType.equals(PlatformType.OMRON_WEIGHT_SCALE)) {
             preference.setIcon(R.drawable.ic_weight_scale_48dp);
             preference.setSummary("Weight Scale Device");
         }
@@ -254,8 +260,9 @@ public class PrefsFragmentSettings extends PreferenceFragment {
         }
         return super.onOptionsItemSelected(item);
     }
+
     @Override
-    public void onDestroy(){
+    public void onDestroy() {
         myBlueTooth.close();
         super.onDestroy();
     }

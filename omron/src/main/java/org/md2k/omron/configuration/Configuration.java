@@ -2,7 +2,9 @@ package org.md2k.omron.configuration;
 
 import android.os.Environment;
 
+import org.md2k.datakitapi.source.METADATA;
 import org.md2k.datakitapi.source.datasource.DataSource;
+import org.md2k.datakitapi.source.platform.PlatformType;
 import org.md2k.utilities.FileManager;
 
 import java.io.FileNotFoundException;
@@ -57,5 +59,23 @@ public class Configuration {
     }
     public static ArrayList<DataSource> getDataSources() throws FileNotFoundException {
         return read();
+    }
+    public static String getDeviceAddress(String platformType){
+        ArrayList<DataSource> dataSources=read();
+        if(dataSources==null) return null;
+        for(int i = 0; i<dataSources.size(); i++)
+            if(dataSources.get(i).getPlatform().getType().equals(platformType))
+                if(dataSources.get(i).getPlatform().getMetadata().containsKey(METADATA.DEVICE_ID))
+                    return dataSources.get(i).getPlatform().getMetadata().get(METADATA.DEVICE_ID);
+        return null;
+    }
+    public static String getDeviceName(String platformType){
+        ArrayList<DataSource> dataSources=read();
+        if(dataSources==null) return null;
+        for(int i = 0; i<dataSources.size(); i++)
+            if(dataSources.get(i).getPlatform().getType().equals(platformType))
+                if(dataSources.get(i).getPlatform().getMetadata().containsKey(METADATA.NAME))
+                    return dataSources.get(i).getPlatform().getMetadata().get(METADATA.NAME);
+        return null;
     }
 }

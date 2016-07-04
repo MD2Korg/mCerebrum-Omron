@@ -12,8 +12,15 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
+import android.os.Handler;
 import android.os.IBinder;
+import android.os.Message;
+import android.os.RemoteException;
 import android.util.Log;
+import android.view.View;
+
+import org.md2k.omron.IBleListener;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -52,59 +59,63 @@ import java.util.UUID;
 
 public class MyBlueTooth {
     private static final String TAG = MyBlueTooth.class.getSimpleName();
-    private BluetoothManager bluetoothManager;
-    private BluetoothAdapter mBluetoothAdapter;
-    private BluetoothLeService mBluetoothLeService;
-    private ArrayList<ArrayList<BluetoothGattCharacteristic>> mGattCharacteristics =
-            new ArrayList<ArrayList<BluetoothGattCharacteristic>>();
-    private BluetoothDevice device;
-    boolean isConnected=false;
-    private final String LIST_NAME = "NAME";
-    private final String LIST_UUID = "UUID";
-    private BlueToothCallBack blueToothCallBack;
+    Context context;
+    protected BleService mBleService;
+    public static final int MSG_CONNECTING = 0;
+    public static final int MSG_CONNECTED = 1;
+    public static final int MSG_DISCONNECTED = 2;
+    public static final int MSG_WM_DATA_RECV = 3;
+    public static final int MSG_ADV_CATCH_DEV = 4;
+    public static final int MSG_SCAN_CANCEL = 5;
+    public static final int MSG_BATTERY_DATA_RECV = 6;
+    public static final int MSG_CTS_DATA_RECV = 7;
+    public static final int MSG_BPM_DATA_RECV = 8;
+    public static final int MSG_BPF_DATA_RECV = 9;
+    public static final int MSG_LISTVIEW_CLR = 10;
+    public static final int MSG_WSF_DATA_RECV = 11;
 
-    private Context context;
+    public static final int BLE_STATE_IDLE = 0;
+    public static final int BLE_STATE_SCANNING = 1;
+    public static final int BLE_STATE_CONNECTING = 2;
+    public static final int BLE_STATE_CONNECT = 3;
+    public static final int BLE_STATE_DATA_RECV = 4;
+    public int mBleState = BLE_STATE_IDLE;
+    OnReceiveListener onReceiveListener;
+    OnConnectionListener onConnectionListener;
+    boolean isConnected;
 
-    public MyBlueTooth(Context context, BlueToothCallBack blueToothCallBack) {
-        try {
-            this.context = context;
-            bluetoothManager = (BluetoothManager) context.getSystemService(Context.BLUETOOTH_SERVICE);
-            mBluetoothAdapter = bluetoothManager.getAdapter();
-            this.blueToothCallBack = blueToothCallBack;
-            if(blueToothCallBack!=null)
-                context.registerReceiver(mReceiver, new IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED));
 
-        }catch (Exception ignored){
-
+    public MyBlueTooth(Context context, OnConnectionListener onConnectionListener, OnReceiveListener onReceiveListener) {
+        this.context=context;
+        this.onReceiveListener=onReceiveListener;
+        this.onConnectionListener=onConnectionListener;
+        isConnected=false;
+        if (mBleService != null){
+            mBleService.setCurrentContext(context.getApplicationContext(), (IBleListener) mBinder);
         }
+        context.bindService(new Intent(context, BleService.class), mConnection, Context.BIND_AUTO_CREATE);
     }
-    public final BroadcastReceiver mReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            final String action = intent.getAction();
-            if(blueToothCallBack==null) return;
-            if (action.equals(BluetoothAdapter.ACTION_STATE_CHANGED)) {
-                final int state = intent.getIntExtra(BluetoothAdapter.EXTRA_STATE,
-                        BluetoothAdapter.ERROR);
-                switch (state) {
-                    case BluetoothAdapter.STATE_OFF:
-                        blueToothCallBack.onDisconnected();
-                        break;
-                    case BluetoothAdapter.STATE_ON:
-                        blueToothCallBack.onConnected();
-                        break;
-                    case BluetoothAdapter.STATE_TURNING_ON:
-                        break;
-                    case BluetoothAdapter.STATE_TURNING_OFF:
-                        break;
-                    default:
-                        break;
-                }
-            }
-        }
-    };
+    public void scanOn(UUID[] uuids) {
+        mBleService.BleScan(uuids);
+    }
+    public void scanOff(){
+        mBleService.BleScanOff();
+    }
+    public void connect(BluetoothDevice bluetoothDevice){
+        mBleService.BleConnectDev(bluetoothDevice);
+    }
+
+    public void close() {
+        context.unbindService(mConnection);
+    }
+
+    public void disconnect() {
+        if(isConnected)
+            mBleService.BleDisconnect();
+    }
 
     public void enable() {
+        BluetoothAdapter mBluetoothAdapter=((BluetoothManager) context.getSystemService(Context.BLUETOOTH_SERVICE)).getAdapter();
         if (mBluetoothAdapter == null) return;
         if (!mBluetoothAdapter.isEnabled()) {
             Intent btIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
@@ -114,6 +125,7 @@ public class MyBlueTooth {
     }
 
     public void disable() {
+        BluetoothAdapter mBluetoothAdapter=((BluetoothManager) context.getSystemService(Context.BLUETOOTH_SERVICE)).getAdapter();
         if (mBluetoothAdapter == null) return;
         if (mBluetoothAdapter.isEnabled()) {
             mBluetoothAdapter.disable();
@@ -121,6 +133,7 @@ public class MyBlueTooth {
     }
 
     public boolean isEnabled() {
+        BluetoothAdapter mBluetoothAdapter=((BluetoothManager) context.getSystemService(Context.BLUETOOTH_SERVICE)).getAdapter();
         if (mBluetoothAdapter == null)
             return false;
         return mBluetoothAdapter.isEnabled();
@@ -128,161 +141,174 @@ public class MyBlueTooth {
     public boolean hasSupport() {
         if (!context.getPackageManager().hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE))
             return false;
+        BluetoothAdapter mBluetoothAdapter=((BluetoothManager) context.getSystemService(Context.BLUETOOTH_SERVICE)).getAdapter();
         return mBluetoothAdapter != null;
     };
-    public void scanStart(final BluetoothAdapter.LeScanCallback mLeScanCallback) {
-        mBluetoothAdapter.startLeScan( mLeScanCallback);
-    }
-    public void scanStop(BluetoothAdapter.LeScanCallback mLeScanCallback){
-        mBluetoothAdapter.stopLeScan(mLeScanCallback);
-    }
-    public void connect(BluetoothDevice device){
-        this.device=device;
-        Intent gattServiceIntent = new Intent(context, BluetoothLeService.class);
-        context.bindService(gattServiceIntent, mServiceConnection, context.BIND_AUTO_CREATE);
-        context.registerReceiver(mGattUpdateReceiver, makeGattUpdateIntentFilter());
-    }
-    public boolean hasUUID(byte[] advertisedData, UUID uuid) {
-        ByteBuffer buffer = ByteBuffer.wrap(advertisedData).order(ByteOrder.LITTLE_ENDIAN);
-        while (buffer.remaining() > 2) {
-            byte length = buffer.get();
-            if (length == 0) break;
 
-            byte type = buffer.get();
-            switch (type) {
-                case 0x02: // Partial list of 16-bit UUIDs
-                case 0x03: // Complete list of 16-bit UUIDs
-                    while (length >= 2) {
-                        UUID temp=UUID.fromString(String.format(
-                                "%08x-0000-1000-8000-00805f9b34fb", buffer.getShort()));
-                        if(uuid.toString().equalsIgnoreCase(temp.toString())) return true;
-                        length -= 2;
-                    }
-                    break;
 
-                case 0x06: // Partial list of 128-bit UUIDs
-                case 0x07: // Complete list of 128-bit UUIDs
-                    while (length >= 16) {
-                        long lsb = buffer.getLong();
-                        long msb = buffer.getLong();
-                        UUID temp=new UUID(msb, lsb);
-                        if(uuid.toString().equalsIgnoreCase(temp.toString()))
-                            return true;
-                        length -= 16;
-                    }
-                    break;
-
-                default:
-                    buffer.position(buffer.position() + length - 1);
-                    break;
-            }
-        }
-        return false;
-    }
-
-    // Code to manage Service lifecycle.
-    private final ServiceConnection mServiceConnection = new ServiceConnection() {
-
-        @Override
-        public void onServiceConnected(ComponentName componentName, IBinder service) {
-            mBluetoothLeService = ((BluetoothLeService.LocalBinder) service).getService();
-            if (!mBluetoothLeService.initialize()) {
-                Log.e(TAG, "Unable to initialize Bluetooth");
-            }else {
-                // Automatically connects to the device upon successful start-up initialization.
-                mBluetoothLeService.connect(device.getAddress());
-            }
+    private final IBleListener.Stub mBinder = new IBleListener.Stub() {
+        public void BleAdvCatch() throws RemoteException {
+            Log.d(TAG, "[IN]BleAdvCatch");
+            mBleState = BLE_STATE_CONNECTING;
+            Message msg = new Message();
+            msg.what=MSG_CONNECTING;
+            mHandler.sendMessage(msg);
         }
 
-        @Override
-        public void onServiceDisconnected(ComponentName componentName) {
-            mBluetoothLeService = null;
+        public void BleAdvCatchDevice(BluetoothDevice dev) throws RemoteException {
+            Log.d(TAG, "[IN]BleAdvCatchDevice");
+            Message msg = new Message();
+            msg.what=MSG_ADV_CATCH_DEV;
+            msg.obj = dev;
+            mHandler.sendMessage(msg);
         }
-    };
 
-    // Handles various events fired by the Service.
-    // ACTION_GATT_CONNECTED: connected to a GATT server.
-    // ACTION_GATT_DISCONNECTED: disconnected from a GATT server.
-    // ACTION_GATT_SERVICES_DISCOVERED: discovered GATT services.
-    // ACTION_DATA_AVAILABLE: received data from the device.  This can be a result of read
-    //                        or notification operations.
-    private final BroadcastReceiver mGattUpdateReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            final String action = intent.getAction();
-            Log.d(TAG,"BroadcastReceiver..."+action);
-            if (BluetoothLeService.ACTION_GATT_CONNECTED.equals(action)) {
-                isConnected = true;
-            } else if (BluetoothLeService.ACTION_GATT_DISCONNECTED.equals(action)) {
-                isConnected = false;
-            } else if (BluetoothLeService.ACTION_GATT_SERVICES_DISCOVERED.equals(action)) {
-                displayGattServices(mBluetoothLeService.getSupportedGattServices());
-            } else if (BluetoothLeService.ACTION_DATA_AVAILABLE.equals(action)) {
-                displayData(intent.getStringExtra(BluetoothLeService.EXTRA_DATA));
-            }
+        public void BleConnected() throws RemoteException {
+            Log.d(TAG, "[IN]BleConnected");
+            mBleState = BLE_STATE_CONNECT;
+            Message msg = new Message();
+            msg.what=MSG_CONNECTED;
+            mHandler.sendMessage(msg);
+        }
+
+        public void BleDisConnected() throws RemoteException {
+            Log.d(TAG, "[IN]BleDisConnected");
+            mBleState = BLE_STATE_IDLE;
+            Message msg = new Message();
+            msg.what=MSG_DISCONNECTED;
+            mHandler.sendMessage(msg);
+        }
+
+        public void BleWmDataRecv(byte[] data) throws RemoteException {
+            Log.d(TAG, "[IN]BleDataRecv");
+            Message msg = new Message();
+            msg.what=MSG_WM_DATA_RECV;
+            msg.obj=data;
+            mHandler.sendMessage(msg);
+        }
+
+        public void BleBatteryDataRecv(byte[] data) throws RemoteException {
+            Log.d(TAG, "[IN]BleBatteryDataRecv");
+            Message msg = new Message();
+            msg.what=MSG_BATTERY_DATA_RECV;
+            msg.obj=data;
+            mHandler.sendMessage(msg);
+        }
+
+        public void BleCtsDataRecv(byte[] data) throws RemoteException {
+            Log.d(TAG, "[IN]BleCtsDataRecv");
+            Message msg = new Message();
+            msg.what=MSG_CTS_DATA_RECV;
+            msg.obj=data;
+            mHandler.sendMessage(msg);
+        }
+
+        public void BleBpmDataRecv(byte[] data) throws RemoteException {
+            Log.d(TAG, "[IN]BleBpmDataRecv");
+            Message msg = new Message();
+            msg.what=MSG_BPM_DATA_RECV;
+            msg.obj=data;
+            mHandler.sendMessage(msg);
+        }
+
+        public void BleBpfDataRecv(byte[] data) throws RemoteException {
+            Log.d(TAG, "[IN]BleBpfDataRecv");
+            Message msg = new Message();
+            msg.what=MSG_BPF_DATA_RECV;
+            msg.obj=data;
+            mHandler.sendMessage(msg);
+        }
+
+        public void BleWsfDataRecv(byte[] data) throws RemoteException {
+            Log.d(TAG, "[IN]BleWsfDataRecv");
+            Message msg = new Message();
+            msg.what=MSG_WSF_DATA_RECV;
+            msg.obj=data;
+            mHandler.sendMessage(msg);
         }
     };
-    private static IntentFilter makeGattUpdateIntentFilter() {
-        final IntentFilter intentFilter = new IntentFilter();
-        intentFilter.addAction(BluetoothLeService.ACTION_GATT_CONNECTED);
-        intentFilter.addAction(BluetoothLeService.ACTION_GATT_DISCONNECTED);
-        intentFilter.addAction(BluetoothLeService.ACTION_GATT_SERVICES_DISCOVERED);
-        intentFilter.addAction(BluetoothLeService.ACTION_DATA_AVAILABLE);
-        return intentFilter;
-    }
-    private void displayData(String data) {
-        if (data != null) {
-            Log.d(TAG,"Received Data="+data);
+    // Event handler
+    protected Handler mHandler = new Handler() {
+        public void handleMessage(Message msg){
+            onReceiveMessage(msg);
+        }
+    };
+    protected void onReceiveMessage(Message msg) {
+        Log.d(TAG, "[IN]onReceiveMessage");
+        switch(msg.what){
+            case MSG_CONNECTING:
+                break;
+
+            case MSG_CONNECTED:
+                Log.d(TAG, "[LOG]MSG_CONNECTED");
+                isConnected=true;
+                onReceiveListener.onReceived(msg);
+                break;
+
+            case MSG_DISCONNECTED:
+                Log.d(TAG, "[LOG]MSG_DISCONNECTED");
+                isConnected=false;
+                onReceiveListener.onReceived(msg);
+                break;
+
+            case MSG_ADV_CATCH_DEV:
+                Log.d(TAG, "[LOG]MSG_ADV_CATCH_DEV");
+                onReceiveListener.onReceived(msg);
+                break;
+            case MSG_BPM_DATA_RECV:
+                onReceiveListener.onReceived(msg);
+                break;
+
+            case MSG_BATTERY_DATA_RECV:
+                onReceiveListener.onReceived(msg);
+                break;
+
+            case MSG_CTS_DATA_RECV:
+                byte[] ctsdata = (byte[])msg.obj;
+                byte[] buf = new byte[2];
+                System.arraycopy(ctsdata, 0, buf, 0, 2);
+                ByteBuffer ctsyearbyteBuffer = ByteBuffer.wrap(buf);
+                ctsyearbyteBuffer.order(ByteOrder.LITTLE_ENDIAN);
+
+                int	 ctsYear	  = ctsyearbyteBuffer.getShort();
+                int	 ctsMonth	  = ctsdata[2];
+                int	 ctsDay		  = ctsdata[3];
+                int	 ctsHour	  = ctsdata[4];
+                int	 ctsMinute	  = ctsdata[5];
+                int	 ctsSecond	  = ctsdata[6];
+                byte AdjustReason = ctsdata[9];
+
+                String ctsTime =
+                        String.format("%1$04d", ctsYear) + "-" + String.format("%1$02d", ctsMonth)	+ "-" + String.format("%1$02d", ctsDay) + " " +
+                                String.format("%1$02d", ctsHour) + ":" + String.format("%1$02d", ctsMinute) + ":" + String.format("%1$02d", ctsSecond);
+                onReceiveListener.onReceived(msg);
+                break;
+
+            case MSG_LISTVIEW_CLR:
+                Log.d(TAG, "[LOG]MSG_LISTVIEW_CLR");
+                break;
+
+            default:
+                break;
         }
     }
-    private void displayGattServices(List<BluetoothGattService> gattServices) {
-        Log.d(TAG,"displayGattServices...");
-        if (gattServices == null) return;
-        String uuid = null;
-        ArrayList<HashMap<String, String>> gattServiceData = new ArrayList<HashMap<String, String>>();
-        ArrayList<ArrayList<HashMap<String, String>>> gattCharacteristicData
-                = new ArrayList<ArrayList<HashMap<String, String>>>();
-        mGattCharacteristics = new ArrayList<ArrayList<BluetoothGattCharacteristic>>();
-
-        // Loops through available GATT Services.
-        for (BluetoothGattService gattService : gattServices) {
-            HashMap<String, String> currentServiceData = new HashMap<String, String>();
-            uuid = gattService.getUuid().toString();
-            currentServiceData.put(
-                    LIST_NAME, SampleGattAttributes.lookup(uuid, "unknown service"));
-            currentServiceData.put(LIST_UUID, uuid);
-            gattServiceData.add(currentServiceData);
-
-            ArrayList<HashMap<String, String>> gattCharacteristicGroupData =
-                    new ArrayList<HashMap<String, String>>();
-            List<BluetoothGattCharacteristic> gattCharacteristics =
-                    gattService.getCharacteristics();
-            ArrayList<BluetoothGattCharacteristic> charas =
-                    new ArrayList<BluetoothGattCharacteristic>();
-
-            // Loops through available Characteristics.
-            for (BluetoothGattCharacteristic gattCharacteristic : gattCharacteristics) {
-                charas.add(gattCharacteristic);
-                HashMap<String, String> currentCharaData = new HashMap<String, String>();
-                uuid = gattCharacteristic.getUuid().toString();
-                currentCharaData.put(
-                        LIST_NAME, SampleGattAttributes.lookup(uuid, "unknown_characteristic"));
-                currentCharaData.put(LIST_UUID, uuid);
-                gattCharacteristicGroupData.add(currentCharaData);
-                Log.d(TAG,"uuid="+uuid);
-                if(uuid.equals("da39c921-1d81-48e2-9c68-d0ae4bbd351f"))
-                    mBluetoothLeService.setCharacteristicNotification(gattCharacteristic,true);
-                mBluetoothLeService.readCharacteristic(gattCharacteristic);
+    protected ServiceConnection mConnection = new ServiceConnection() {
+        public void onServiceConnected(ComponentName className, IBinder service) {
+            Log.d(TAG, "[IN]onServiceConnected");
+            onBleServiceConnected(service);
         }
-            mGattCharacteristics.add(charas);
-            gattCharacteristicData.add(gattCharacteristicGroupData);
-        }
-    }
-    public void close() {
-        try {
-            context.unregisterReceiver(mReceiver);
-        }catch (Exception ignored){
 
+        public void onServiceDisconnected(ComponentName name) {
+            Log.d(TAG, "[IN]onServiceDisconnected");
+            mBleService = null;
+            context.unbindService(mConnection);
+            onConnectionListener.onDisconnected();
         }
+    };
+    protected void onBleServiceConnected(IBinder service) {
+        Log.d(TAG, "[IN]onBleReceiveMessage");
+        mBleService = ((BleService.MyServiceLocalBinder)service).getService();
+        mBleService.setCurrentContext(context.getApplicationContext(), (IBleListener) mBinder);
+        onConnectionListener.onConnected();
     }
 }

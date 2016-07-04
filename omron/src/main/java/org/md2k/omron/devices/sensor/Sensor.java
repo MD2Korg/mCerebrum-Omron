@@ -3,6 +3,7 @@ package org.md2k.omron.devices.sensor;
 import android.content.Context;
 
 import org.md2k.datakitapi.DataKitAPI;
+import org.md2k.datakitapi.datatype.DataType;
 import org.md2k.datakitapi.exception.DataKitException;
 import org.md2k.datakitapi.source.METADATA;
 import org.md2k.datakitapi.source.datasource.DataSourceBuilder;
@@ -73,15 +74,19 @@ public class Sensor {
         if (dataSourceClient != null)
             DataKitAPI.getInstance(context).unregister(dataSourceClient);
     }
-    HashMap<String, String> createDataDescriptor(String name, int minValue, int maxValue, String unit){
+    HashMap<String, String> createDataDescriptor(String name, int minValue, int maxValue, String unit, String dataType){
         HashMap<String, String> dataDescriptor = new HashMap<>();
         dataDescriptor.put(METADATA.NAME, name);
         dataDescriptor.put(METADATA.MIN_VALUE, String.valueOf(minValue));
         dataDescriptor.put(METADATA.MAX_VALUE, String.valueOf(maxValue));
         dataDescriptor.put(METADATA.DESCRIPTION, name);
         dataDescriptor.put(METADATA.UNIT,unit);
-        dataDescriptor.put(METADATA.DATA_TYPE, int.class.getName());
+        dataDescriptor.put(METADATA.DATA_TYPE, dataType);
         return dataDescriptor;
+    }
+    public void insert(DataType data) throws DataKitException {
+        if(dataSourceClient!=null)
+            DataKitAPI.getInstance(context).insert(dataSourceClient, data);
     }
 
 }
