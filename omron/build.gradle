@@ -1,4 +1,4 @@
-version = '0.0.1'
+version = '0.0.2'
 apply from: 'versioning.gradle'
 
 apply plugin: 'com.android.application'
