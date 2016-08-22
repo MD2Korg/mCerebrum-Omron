@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_weight="10"
+    android:background="@color/teal_50"
+    android:orientation="vertical"
+    android:paddingBottom="50dp"
+    android:paddingLeft="16dp"
+    android:paddingRight="16dp"
+    android:paddingTop="16dp">
+
+    <TextView
+        android:id="@+id/text_view_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginBottom="20dp"
+        android:gravity="center"
+        android:text="Slide 1 title"
+        android:textColor="@color/teal_700"
+        android:textSize="28sp"
+        android:textStyle="bold" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <ProgressBar
+            android:id="@+id/pb_connecting"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:layout_weight="2"
+            android:indeterminate="true"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"></ProgressBar>
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/text_view_message"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:paddingTop="30dp"
+        android:text="Loooooooooooooooo[...]ooooooooong descreption here"
+        android:textSize="20sp" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="bottom"
+        android:measureWithLargestChild="false"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/button_1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:layout_weight=".5"
+            android:background="@drawable/button_teal"
+            android:text="Retry" />
+    </LinearLayout>
+
+</LinearLayout>

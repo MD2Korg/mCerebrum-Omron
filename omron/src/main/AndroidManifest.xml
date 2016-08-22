@@ -8,6 +8,7 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
+    <uses-permission android:name="android.permission.INTERNET" />
 
 
     <application
@@ -57,6 +58,9 @@
             android:label="Weight Scale"
             android:screenOrientation="portrait"/>
         <service android:name=".bluetooth.BleService" android:enabled="true"/>
+        <meta-data
+            android:name="io.fabric.ApiKey"
+            android:value="1cad146ed866fa3d49c3bc8376ff52af7d9970da" />
     </application>
 
 </manifest>

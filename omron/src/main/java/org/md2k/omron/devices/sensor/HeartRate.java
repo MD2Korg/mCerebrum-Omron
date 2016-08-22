@@ -2,7 +2,6 @@ package org.md2k.omron.devices.sensor;
 
 import android.content.Context;
 
-import org.md2k.datakitapi.datatype.DataTypeInt;
 import org.md2k.datakitapi.datatype.DataTypeIntArray;
 import org.md2k.datakitapi.source.METADATA;
 import org.md2k.datakitapi.source.datasource.DataSourceBuilder;

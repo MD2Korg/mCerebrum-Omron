@@ -4,7 +4,6 @@ import android.os.Environment;
 
 import org.md2k.datakitapi.source.METADATA;
 import org.md2k.datakitapi.source.datasource.DataSource;
-import org.md2k.datakitapi.source.platform.PlatformType;
 import org.md2k.utilities.FileManager;
 
 import java.io.FileNotFoundException;

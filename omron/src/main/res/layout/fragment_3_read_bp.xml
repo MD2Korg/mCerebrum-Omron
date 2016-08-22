@@ -1,36 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@color/teal_50"
-    android:layout_weight="10"
     android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_weight="10"
+    android:background="@color/teal_50"
+    android:orientation="vertical"
+    android:paddingBottom="50dp"
     android:paddingLeft="16dp"
-    android:paddingTop="16dp"
     android:paddingRight="16dp"
-    android:paddingBottom="50dp">
+    android:paddingTop="16dp">
 
     <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:layout_marginBottom="20dp"
-        android:gravity="center"
-        android:textSize="28sp"
         android:id="@+id/text_view_title"
-        android:text="Slide 1 title"
-        android:textStyle="bold" />
-
-    <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:gravity="center"
-        android:textSize="20dp"
-        android:id="@+id/text_view_status"
-        android:text="Slide 1 title"
         android:layout_marginBottom="20dp"
-        android:textColor="@color/lightblue_700" />
+        android:gravity="center"
+        android:text="Slide 1 title"
+        android:textColor="@color/teal_700"
+        android:textSize="28sp"
+        android:textStyle="bold" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -38,180 +29,180 @@
         android:orientation="vertical">
 
         <LinearLayout
-            android:orientation="horizontal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:weightSum="1"
-            android:layout_marginTop="10dp">
+            android:layout_marginTop="10dp"
+            android:orientation="horizontal"
+            android:weightSum="1">
 
             <TextView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:text="Systolic (mmHg):"
                 android:id="@+id/textView6"
-                android:textSize="24dp"
-                android:layout_weight="0.60" />
-
-            <TextView
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:text="---"
+                android:layout_weight="0.60"
+                android:text="Systolic (mmHg):"
+                android:textSize="24dp" />
+
+            <TextView
                 android:id="@+id/text_view_systolic"
-                android:textSize="24dp"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.40"
+                android:text="---"
                 android:textColor="@color/red_500"
-                android:layout_weight="0.40" />
+                android:textSize="24dp" />
         </LinearLayout>
 
         <LinearLayout
-            android:orientation="horizontal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:weightSum="1"
-            android:layout_marginTop="10dp">
+            android:layout_marginTop="10dp"
+            android:orientation="horizontal"
+            android:weightSum="1">
 
             <TextView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:text="Diastolic (mmHg):"
                 android:id="@+id/textView4"
-                android:textSize="24dp"
-                android:layout_weight="0.60" />
-
-            <TextView
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:text="---"
+                android:layout_weight="0.60"
+                android:text="Diastolic (mmHg):"
+                android:textSize="24dp" />
+
+            <TextView
                 android:id="@+id/text_view_diastolic"
-                android:textSize="24dp"
-                android:textColor="@color/red_500"
-                android:layout_weight="0.40" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:orientation="horizontal"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:weightSum="1"
-            android:layout_weight="0"
-            android:layout_marginTop="10dp">
-
-            <TextView
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:text="Pulse/min:"
-                android:id="@+id/textView2"
-                android:textSize="24dp"
-                android:layout_weight="0.50" />
-
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_weight="0.40"
                 android:text="---"
-                android:id="@+id/text_view_pulse_rate"
-                android:textSize="24dp"
                 android:textColor="@color/red_500"
-                android:layout_weight="0.50" />
+                android:textSize="24dp" />
         </LinearLayout>
 
         <LinearLayout
-            android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp">
+            android:layout_marginTop="10dp"
+            android:layout_weight="0"
+            android:orientation="horizontal"
+            android:weightSum="1">
+
+            <TextView
+                android:id="@+id/textView2"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.50"
+                android:text="Pulse/min:"
+                android:textSize="24dp" />
+
+            <TextView
+                android:id="@+id/text_view_pulse_rate"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.50"
+                android:text="---"
+                android:textColor="@color/red_500"
+                android:textSize="24dp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:orientation="vertical">
 
             <LinearLayout
-                android:orientation="horizontal"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:weightSum="1"
+                android:layout_marginBottom="5dp"
                 android:layout_marginTop="10dp"
-                android:layout_marginBottom="5dp">
+                android:layout_weight="1"
+                android:orientation="horizontal"
+                android:weightSum="1">
 
                 <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:text="Mean Arterial:"
                     android:id="@+id/textView9"
-                    android:textSize="12dp"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
                     android:layout_weight=".30"
+                    android:text="Mean Arterial:"
+                    android:textSize="12dp"
                     android:textStyle="bold" />
 
                 <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:text="---"
                     android:id="@+id/text_view_pulse"
-                    android:textSize="12dp"
-                    android:textColor="@color/red_500"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
                     android:layout_weight=".20"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:text="Body Movement:"
-                    android:id="@+id/textView11"
-                    android:textSize="12dp"
-                    android:layout_weight=".30"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
                     android:text="---"
-                    android:id="@+id/text_view_movement"
-                    android:textSize="12dp"
                     android:textColor="@color/red_500"
+                    android:textSize="12dp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/textView11"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight=".30"
+                    android:text="Body Movement:"
+                    android:textSize="12dp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/text_view_movement"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
                     android:layout_weight=".20"
+                    android:text="---"
+                    android:textColor="@color/red_500"
+                    android:textSize="12dp"
                     android:textStyle="bold" />
             </LinearLayout>
 
             <LinearLayout
-                android:orientation="horizontal"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:weightSum="1"
+                android:layout_marginBottom="10dp"
                 android:layout_marginTop="5dp"
-                android:layout_marginBottom="10dp">
+                android:layout_weight="1"
+                android:orientation="horizontal"
+                android:weightSum="1">
 
                 <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:text="Irregular Pulse:"
                     android:id="@+id/textView3"
-                    android:textSize="12dp"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
                     android:layout_weight=".30"
+                    android:text="Irregular Pulse:"
+                    android:textSize="12dp"
                     android:textStyle="bold" />
 
                 <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:text="---"
                     android:id="@+id/text_view_irregular_pulse"
-                    android:textSize="12dp"
-                    android:textColor="@color/red_500"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
                     android:layout_weight=".20"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:text="Battery:"
-                    android:id="@+id/textView7"
-                    android:textSize="12dp"
-                    android:layout_weight=".30"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
                     android:text="---"
-                    android:id="@+id/text_view_battery"
-                    android:textSize="12dp"
                     android:textColor="@color/red_500"
+                    android:textSize="12dp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/textView7"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight=".30"
+                    android:text="Battery:"
+                    android:textSize="12dp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/text_view_battery"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
                     android:layout_weight=".20"
+                    android:text="---"
+                    android:textColor="@color/red_500"
+                    android:textSize="12dp"
                     android:textStyle="bold" />
 
             </LinearLayout>
@@ -220,40 +211,30 @@
     </LinearLayout>
 
     <LinearLayout
-        android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:gravity="bottom"
         android:measureWithLargestChild="false"
-        android:gravity="bottom">
+        android:orientation="horizontal">
 
         <Button
+            android:id="@+id/button_1"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="Exit"
-            android:id="@+id/button_cancel"
-            android:background="@drawable/button_teal"
-            android:layout_weight=".5"
-            android:layout_margin="10dp" />
-
-        <Button
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:text="Retry"
-            android:id="@+id/button_retry"
-            android:background="@drawable/button_red"
-            android:textColor="@color/white"
-            android:layout_weight=".5"
-            android:layout_margin="10dp" />
-
-        <Button
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:text="Save"
-            android:id="@+id/button_save"
-            android:background="@drawable/button_red"
-            android:textColor="@color/white"
             android:layout_margin="10dp"
-            android:layout_weight=".5" />
+            android:layout_weight=".5"
+            android:background="@drawable/button_teal"
+            android:text="Retry" />
+
+        <Button
+            android:id="@+id/button_2"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:layout_weight=".5"
+            android:background="@drawable/button_red"
+            android:text="Save"
+            android:textColor="@color/white" />
     </LinearLayout>
 
 </LinearLayout>

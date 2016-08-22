@@ -4,11 +4,8 @@ import android.content.Context;
 
 import org.md2k.datakitapi.exception.DataKitException;
 import org.md2k.datakitapi.source.METADATA;
-import org.md2k.datakitapi.source.datasource.DataSourceBuilder;
 import org.md2k.datakitapi.source.platform.Platform;
 import org.md2k.datakitapi.source.platform.PlatformBuilder;
-import org.md2k.omron.bluetooth.MyBlueTooth;
-import org.md2k.omron.devices.sensor.Battery;
 import org.md2k.omron.devices.sensor.Sensor;
 
 import java.util.ArrayList;

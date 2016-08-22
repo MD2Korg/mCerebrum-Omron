@@ -2,7 +2,6 @@ package org.md2k.omron.devices;
 
 import android.content.Context;
 
-import org.md2k.datakitapi.source.platform.PlatformBuilder;
 import org.md2k.datakitapi.source.platform.PlatformType;
 import org.md2k.omron.devices.sensor.Battery;
 import org.md2k.omron.devices.sensor.BloodPressure;
