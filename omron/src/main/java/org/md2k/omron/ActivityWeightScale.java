@@ -67,7 +67,7 @@ public class ActivityWeightScale extends AppIntro {
             setSwipeLock(true);
             setDoneText("");
             setNextArrowColor(ContextCompat.getColor(ActivityWeightScale.this, R.color.teal_500));
-            addSlide(Fragment_1_Info.newInstance(PlatformType.OMRON_WEIGHT_SCALE, "Measure Weight", "Please put on the pressure cuff and initiate a measurement", R.drawable.omron_weight_scale));
+            addSlide(Fragment_1_Info.newInstance(PlatformType.OMRON_WEIGHT_SCALE, "Measure Weight", "Please stand on the weight scale and measure your weight", R.drawable.omron_weight_scale));
             addSlide(Fragment_2_Connect_WS.newInstance(PlatformType.OMRON_WEIGHT_SCALE, "Connecting Device...", "Trying to connect weight scale device...", R.drawable.omron_weight_scale));
             addSlide(Fragment_3_Read_WS.newInstance("Weight Scale Reading"));
             addSlide(Fragment_4_Success.newInstance(PlatformType.OMRON_WEIGHT_SCALE, "!!! Thank you !!!", "Weight data is saved successfully", R.drawable.ic_ok_teal_50dp));

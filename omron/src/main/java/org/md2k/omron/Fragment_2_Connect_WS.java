@@ -2,6 +2,7 @@ package org.md2k.omron;
 
 import android.bluetooth.BluetoothDevice;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.Message;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -52,8 +53,10 @@ import java.util.UUID;
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 public class Fragment_2_Connect_WS extends Fragment implements ISlidePolicy {
-    boolean isData, isBattery;
+    int isData, isBattery;
     ActivityWeightScale activity;
+    Handler handler;
+
     OnConnectionListener onConnectionListener = new OnConnectionListener() {
         @Override
         public void onConnected() {
@@ -63,6 +66,17 @@ public class Fragment_2_Connect_WS extends Fragment implements ISlidePolicy {
 
         @Override
         public void onDisconnected() {
+
+        }
+    };
+    Runnable runnableNextPage = new Runnable() {
+        @Override
+        public void run() {
+            if (isData == 0 || isBattery == 0) return;
+            stop();
+            isData = 0;
+            isBattery = 0;
+            activity.nextSlide();
 
         }
     };
@@ -151,14 +165,16 @@ public class Fragment_2_Connect_WS extends Fragment implements ISlidePolicy {
                     if (userIDFlag) {
                         userIDVal = data[idx++] & 0xFF;
                     }
-                    isData = true;
-                    nextPageIf();
+                    isData++;
+                    handler.removeCallbacks(runnableNextPage);
+                    handler.postDelayed(runnableNextPage, 2000);
                     break;
                 case MyBlueTooth.MSG_BATTERY_DATA_RECV:
                     byte[] batteryData = (byte[]) msg.obj;
                     activity.battery = new double[]{batteryData[0]};
-                    isBattery = true;
-                    nextPageIf();
+                    isBattery++;
+                    handler.removeCallbacks(runnableNextPage);
+                    handler.postDelayed(runnableNextPage, 2000);
                     break;
             }
         }
@@ -179,11 +195,13 @@ public class Fragment_2_Connect_WS extends Fragment implements ISlidePolicy {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        handler = new Handler();
         activity = (ActivityWeightScale) getActivity();
     }
 
     @Override
     public void onDestroy() {
+        handler.removeCallbacks(runnableNextPage);
         super.onDestroy();
     }
 
@@ -220,26 +238,18 @@ public class Fragment_2_Connect_WS extends Fragment implements ISlidePolicy {
         activity.deviceName = Configuration.getDeviceName(PlatformType.OMRON_WEIGHT_SCALE);
         activity.deviceWeightScale = new DeviceWeightScale(getActivity(), activity.deviceId, activity.deviceName);
         stop();
-        isData = false;
-        isBattery = false;
+        isBattery = 0;
+        isData = 0;
         activity.myBlueTooth = new MyBlueTooth(getActivity(), onConnectionListener, onReceiveListener);
     }
 
     public void stop() {
+        handler.removeCallbacks(runnableNextPage);
         if (activity.myBlueTooth != null) {
             activity.myBlueTooth.disconnect();
             activity.myBlueTooth.scanOff();
             activity.myBlueTooth.close();
             activity.myBlueTooth = null;
-        }
-    }
-
-    void nextPageIf() {
-        if (isBattery && isData) {
-            stop();
-            isData = false;
-            isBattery = false;
-            activity.nextSlide();
         }
     }
 }

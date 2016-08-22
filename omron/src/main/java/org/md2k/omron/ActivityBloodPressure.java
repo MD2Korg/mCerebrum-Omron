@@ -79,7 +79,7 @@ public class ActivityBloodPressure extends AppIntro {
             setSwipeLock(true);
             setDoneText("");
             setNextArrowColor(ContextCompat.getColor(ActivityBloodPressure.this, R.color.teal_500));
-            addSlide(Fragment_1_Info.newInstance(PlatformType.OMRON_BLOOD_PRESSURE, "Measure Blood Pressure", "Please put on the pressure cuff and initiate a measurement", R.drawable.omron_bp));
+            addSlide(Fragment_1_Info.newInstance(PlatformType.OMRON_BLOOD_PRESSURE, "Measure Blood Pressure", "Please put on the pressure cuff and measure your blood pressure", R.drawable.omron_bp));
             addSlide(Fragment_2_Connect_BP.newInstance(PlatformType.OMRON_BLOOD_PRESSURE, "Connecting Device...", "Trying to connect Blood Pressure device...", R.drawable.omron_bp));
             addSlide(Fragment_3_Read_BP.newInstance("Blood Pressure Reading"));
             addSlide(Fragment_4_Success.newInstance(PlatformType.OMRON_BLOOD_PRESSURE, "!!! Thank you !!!", "Blood pressure data is saved successfully", R.drawable.ic_ok_teal_50dp));

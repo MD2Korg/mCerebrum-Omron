@@ -2,6 +2,7 @@ package org.md2k.omron;
 
 import android.bluetooth.BluetoothDevice;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.Message;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -24,11 +25,36 @@ import java.util.Locale;
 import java.util.UUID;
 
 /**
- * Created by monowar on 6/26/16.
+ * Copyright (c) 2016, The University of Memphis, MD2K Center
+ * - Syed Monowar Hossain <monowar.hossain@gmail.com>
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ * * Redistributions of source code must retain the above copyright notice, this
+ * list of conditions and the following disclaimer.
+ *
+ * * Redistributions in binary form must reproduce the above copyright notice,
+ * this list of conditions and the following disclaimer in the documentation
+ * and/or other materials provided with the distribution.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+ * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+ * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+ * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+ * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 public class Fragment_2_Connect_BP extends Fragment implements ISlidePolicy {
-    boolean isBattery, isBp;
+    int isBattery, isData;
     ActivityBloodPressure activity;
+    Handler handler;
+
     org.md2k.omron.bluetooth.OnConnectionListener onConnectionListener = new org.md2k.omron.bluetooth.OnConnectionListener() {
         @Override
         public void onConnected() {
@@ -38,6 +64,17 @@ public class Fragment_2_Connect_BP extends Fragment implements ISlidePolicy {
 
         @Override
         public void onDisconnected() {
+
+        }
+    };
+    Runnable runnableNextPage = new Runnable() {
+        @Override
+        public void run() {
+            if (isData == 0 || isBattery == 0) return;
+            stop();
+            isData = 0;
+            isBattery = 0;
+            activity.nextSlide();
 
         }
     };
@@ -151,14 +188,16 @@ public class Fragment_2_Connect_BP extends Fragment implements ISlidePolicy {
 
                     activity.activity = new double[]{((measurementStatusVal & 0x0001) == 0 ? 0 : 1)};
                     activity.heartRate[1] = ((measurementStatusVal & 0x0004) == 0 ? 0 : 1);
-                    isBp = true;
-                    nextPageIf();
+                    isData++;
+                    handler.removeCallbacks(runnableNextPage);
+                    handler.postDelayed(runnableNextPage, 2000);
                     break;
                 case MyBlueTooth.MSG_BATTERY_DATA_RECV:
                     byte[] batteryData = (byte[]) msg.obj;
                     activity.battery = new double[]{batteryData[0]};
-                    isBattery = true;
-                    nextPageIf();
+                    isBattery++;
+                    handler.removeCallbacks(runnableNextPage);
+                    handler.postDelayed(runnableNextPage, 2000);
                     break;
             }
         }
@@ -178,11 +217,13 @@ public class Fragment_2_Connect_BP extends Fragment implements ISlidePolicy {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        handler = new Handler();
         activity = (ActivityBloodPressure) getActivity();
     }
 
     @Override
     public void onDestroy() {
+        handler.removeCallbacks(runnableNextPage);
         super.onDestroy();
     }
 
@@ -220,26 +261,18 @@ public class Fragment_2_Connect_BP extends Fragment implements ISlidePolicy {
         activity.deviceName = Configuration.getDeviceName(PlatformType.OMRON_BLOOD_PRESSURE);
         activity.deviceBloodPressure = new DeviceBloodPressure(getActivity(), activity.deviceId, activity.deviceName);
         stop();
-        isBattery = false;
-        isBp = false;
+        isBattery = 0;
+        isData = 0;
         activity.myBlueTooth = new MyBlueTooth(getActivity(), onConnectionListener, onReceiveListener);
     }
 
     public void stop() {
+        handler.removeCallbacks(runnableNextPage);
         if (activity.myBlueTooth != null) {
             activity.myBlueTooth.disconnect();
             activity.myBlueTooth.scanOff();
             activity.myBlueTooth.close();
             activity.myBlueTooth = null;
-        }
-    }
-
-    void nextPageIf() {
-        if (isBattery && isBp) {
-            stop();
-            isBp = false;
-            isBattery = false;
-            activity.nextSlide();
         }
     }
 }
