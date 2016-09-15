@@ -20,12 +20,14 @@ import com.github.paolorotolo.appintro.AppIntro;
 import org.md2k.datakitapi.DataKitAPI;
 import org.md2k.datakitapi.exception.DataKitException;
 import org.md2k.datakitapi.messagehandler.OnConnectionListener;
+import org.md2k.datakitapi.messagehandler.ResultCallback;
 import org.md2k.datakitapi.source.platform.PlatformType;
 import org.md2k.omron.bluetooth.MyBlueTooth;
 import org.md2k.omron.configuration.Configuration;
 import org.md2k.omron.devices.DeviceWeightScale;
 import org.md2k.utilities.Report.Log;
 import org.md2k.utilities.UI.AlertDialogs;
+import org.md2k.utilities.permission.PermissionInfo;
 
 public class ActivityWeightScale extends AppIntro {
     // Resolution table							  default  1	 2	   3	 4	   5	 6	   7
@@ -41,13 +43,29 @@ public class ActivityWeightScale extends AppIntro {
     double[] battery;
     private DataKitAPI dataKitAPI = null;
 
-	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-        if(Configuration.getDeviceAddress(PlatformType.OMRON_WEIGHT_SCALE)==null){
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        PermissionInfo permissionInfo = new PermissionInfo();
+        permissionInfo.getPermissions(this, new ResultCallback<Boolean>() {
+            @Override
+            public void onResult(Boolean result) {
+                if (!result) {
+                    Toast.makeText(getApplicationContext(), "!PERMISSION DENIED !!! Could not continue...", Toast.LENGTH_SHORT).show();
+                    finish();
+                } else {
+                    load();
+                }
+            }
+        });
+    }
+
+    void load() {
+
+        if (Configuration.getDeviceAddress(PlatformType.OMRON_WEIGHT_SCALE) == null) {
             Toast.makeText(this, "ERROR: Weight Scale device is not configured...", Toast.LENGTH_SHORT).show();
             finish();
-        }else {
+        } else {
 
             dataKitAPI = DataKitAPI.getInstance(getApplicationContext());
             try {
@@ -74,9 +92,9 @@ public class ActivityWeightScale extends AppIntro {
         }
     }
 
-	@Override
-	public void onSkipPressed(Fragment currentFragment) {
-		super.onSkipPressed(currentFragment);
+    @Override
+    public void onSkipPressed(Fragment currentFragment) {
+        super.onSkipPressed(currentFragment);
         AlertDialogs.AlertDialog(ActivityWeightScale.this, "Skip Weight Scale Reading", "Are you sure to skip Weight Scale reading?", R.drawable.ic_info_teal_48dp, "Yes", "No", null, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
@@ -86,6 +104,7 @@ public class ActivityWeightScale extends AppIntro {
             }
         });
     }
+
     public void nextSlide() {
         pager.setCurrentItem(pager.getCurrentItem() + 1);
     }
@@ -98,11 +117,11 @@ public class ActivityWeightScale extends AppIntro {
         pager.setCurrentItem(0);
     }
 
-	@Override
-	public void onDonePressed(Fragment currentFragment) {
-		super.onDonePressed(currentFragment);
-		// Do something when users tap on Done button.
-	}
+    @Override
+    public void onDonePressed(Fragment currentFragment) {
+        super.onDonePressed(currentFragment);
+        // Do something when users tap on Done button.
+    }
 
     @Override
     public void onSlideChanged(@Nullable Fragment oldFragment, @Nullable Fragment newFragment) {
@@ -148,7 +167,7 @@ public class ActivityWeightScale extends AppIntro {
 
     @Override
     public void onDestroy() {
-        if(dataKitAPI!=null) {
+        if (dataKitAPI != null) {
             dataKitAPI.disconnect();
         }
         if (myBlueTooth != null) {

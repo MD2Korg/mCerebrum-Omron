@@ -38,12 +38,14 @@ import com.github.paolorotolo.appintro.AppIntro;
 import org.md2k.datakitapi.DataKitAPI;
 import org.md2k.datakitapi.exception.DataKitException;
 import org.md2k.datakitapi.messagehandler.OnConnectionListener;
+import org.md2k.datakitapi.messagehandler.ResultCallback;
 import org.md2k.datakitapi.source.platform.PlatformType;
 import org.md2k.omron.bluetooth.MyBlueTooth;
 import org.md2k.omron.configuration.Configuration;
 import org.md2k.omron.devices.DeviceBloodPressure;
 import org.md2k.utilities.Report.Log;
 import org.md2k.utilities.UI.AlertDialogs;
+import org.md2k.utilities.permission.PermissionInfo;
 
 public class ActivityBloodPressure extends AppIntro {
     double[] heartRate;
@@ -59,6 +61,21 @@ public class ActivityBloodPressure extends AppIntro {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        PermissionInfo permissionInfo = new PermissionInfo();
+        permissionInfo.getPermissions(this, new ResultCallback<Boolean>() {
+            @Override
+            public void onResult(Boolean result) {
+                if (!result) {
+                    Toast.makeText(getApplicationContext(), "!PERMISSION DENIED !!! Could not continue...", Toast.LENGTH_SHORT).show();
+                    finish();
+                } else {
+                    load();
+                }
+            }
+        });
+    }
+    void load(){
+
         if (Configuration.getDeviceAddress(PlatformType.OMRON_BLOOD_PRESSURE) == null) {
             Toast.makeText(this, "ERROR: Blood Pressure device is not configured...", Toast.LENGTH_SHORT).show();
             finish();

@@ -2,6 +2,7 @@ package org.md2k.omron;
 
 import android.app.Activity;
 import android.bluetooth.BluetoothDevice;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -25,6 +26,7 @@ import org.md2k.datakitapi.source.platform.PlatformType;
 import org.md2k.omron.bluetooth.MyBlueTooth;
 import org.md2k.omron.bluetooth.OnConnectionListener;
 import org.md2k.omron.bluetooth.OnReceiveListener;
+import org.md2k.utilities.UI.AlertDialogs;
 
 import java.util.ArrayList;
 import java.util.UUID;
@@ -79,6 +81,12 @@ public class PrefsFragmentSettingsPlatform extends PreferenceFragment {
             getActivity().setTitle("Settings: Weight Scale");
             uuid = Constants.SERVICE_WEIGHT_SCALE_UUID;
         }
+        AlertDialogs.AlertDialog(getActivity(),"Device not showing?", "Please measure a sample first to see the device", R.drawable.ic_info_teal_48dp, "Ok", null, null, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
+            }
+        });
         myBlueTooth = new MyBlueTooth(getActivity(), onConnectionListener, onReceiveListener);
     }
 
