@@ -13,6 +13,7 @@ import android.widget.TextView;
 
 import com.github.paolorotolo.appintro.ISlidePolicy;
 
+import org.md2k.datakitapi.exception.DataKitException;
 import org.md2k.datakitapi.source.platform.PlatformType;
 import org.md2k.omron.bluetooth.MyBlueTooth;
 import org.md2k.omron.bluetooth.OnConnectionListener;
@@ -238,6 +239,11 @@ public class Fragment_2_Connect_WS extends Fragment implements ISlidePolicy {
         activity.deviceName = Configuration.getDeviceName(PlatformType.OMRON_WEIGHT_SCALE);
         activity.deviceWeightScale = new DeviceWeightScale(getActivity(), activity.deviceId, activity.deviceName);
         stop();
+        try {
+            activity.deviceWeightScale.register();
+        } catch (DataKitException ignored) {
+
+        }
         isBattery = 0;
         isData = 0;
         activity.myBlueTooth = new MyBlueTooth(getActivity(), onConnectionListener, onReceiveListener);
