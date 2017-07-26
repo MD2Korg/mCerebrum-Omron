@@ -1,6 +1,7 @@
 package org.md2k.omron;
 
 import android.bluetooth.BluetoothDevice;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -180,6 +181,15 @@ public class Fragment_2_Connect_WS extends Fragment implements ISlidePolicy {
             }
         }
     };
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if(resultCode==1) return;
+        activity.weight=data.getDoubleArrayExtra("WEIGHT");
+        isData=1;
+        isBattery=1;
+        handler.removeCallbacks(runnableNextPage);
+        handler.post(runnableNextPage);
+    }
 
     public static Fragment_2_Connect_WS newInstance(String platformType, String title, String message, int image) {
 
@@ -219,6 +229,14 @@ public class Fragment_2_Connect_WS extends Fragment implements ISlidePolicy {
             @Override
             public void onClick(View v) {
                 activity.startSlide();
+            }
+        });
+        Button button2 = (Button) v.findViewById(R.id.button_2);
+        button2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent=new Intent(activity,ActivityWeightScaleManual.class);
+                startActivityForResult(intent, 2);// Activity is started with requestCode 2
             }
         });
         return v;

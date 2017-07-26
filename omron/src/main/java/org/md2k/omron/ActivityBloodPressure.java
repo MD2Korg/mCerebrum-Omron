@@ -27,6 +27,7 @@ package org.md2k.omron;
  */
 
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -73,6 +74,10 @@ public class ActivityBloodPressure extends AppIntro {
                 }
             }
         });
+    }
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
     }
     void load(){
 

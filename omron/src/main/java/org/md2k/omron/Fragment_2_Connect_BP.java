@@ -1,6 +1,7 @@
 package org.md2k.omron;
 
 import android.bluetooth.BluetoothDevice;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -243,10 +244,28 @@ public class Fragment_2_Connect_BP extends Fragment implements ISlidePolicy {
                 activity.startSlide();
             }
         });
+        Button button2 = (Button) v.findViewById(R.id.button_2);
+        button2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent=new Intent(activity,ActivityBloodPressureManual.class);
+                startActivityForResult(intent, 2);// Activity is started with requestCode 2
+
+            }
+        });
 
         return v;
     }
-
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if(resultCode==1) return;
+        activity.bloodPressure=data.getDoubleArrayExtra("BLOOD_PRESSURE");
+        activity.heartRate=data.getDoubleArrayExtra("HEART_RATE");
+        isData=1;
+        isBattery=1;
+        handler.removeCallbacks(runnableNextPage);
+        handler.post(runnableNextPage);
+    }
     @Override
     public boolean isPolicyRespected() {
         return false;

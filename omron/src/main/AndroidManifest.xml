@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     package="org.md2k.omron">
@@ -9,8 +10,7 @@
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
-
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 
     <application
         android:allowBackup="true"
@@ -20,17 +20,17 @@
         android:theme="@style/app_theme_teal_light"
         tools:replace="android:theme">
         <activity
-            android:name="org.md2k.omron.ActivityMain"
+            android:name=".ActivityMain"
             android:label="@string/app_name"
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
         <activity
-            android:name="org.md2k.omron.ActivitySettings"
+            android:name=".ActivitySettings"
             android:enabled="true"
             android:exported="true"
             android:label="Settings"
@@ -45,13 +45,19 @@
             android:enabled="true"
             android:exported="true"
             android:label="Settings: Omron"
-            android:screenOrientation="portrait"/>
+            android:screenOrientation="portrait" />
         <activity
             android:name=".ActivityBloodPressure"
             android:enabled="true"
             android:exported="true"
             android:label="Blood Pressure"
-            android:screenOrientation="portrait"/>
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ActivityBloodPressureManual"
+            android:enabled="true"
+            android:exported="true"
+            android:label="Blood Pressure"
+            android:screenOrientation="portrait" />
         <activity
             android:name="org.md2k.utilities.permission.ActivityPermission"
             android:enabled="true"
@@ -63,11 +69,17 @@
             android:enabled="true"
             android:exported="true"
             android:label="Weight Scale"
-            android:screenOrientation="portrait"/>
-        <service android:name=".bluetooth.BleService" android:enabled="true"/>
+            android:screenOrientation="portrait" />
+
+        <service
+            android:name=".bluetooth.BleService"
+            android:enabled="true" />
+
         <meta-data
             android:name="io.fabric.ApiKey"
             android:value="1cad146ed866fa3d49c3bc8376ff52af7d9970da" />
+
+        <activity android:name=".ActivityWeightScaleManual"></activity>
     </application>
 
 </manifest>

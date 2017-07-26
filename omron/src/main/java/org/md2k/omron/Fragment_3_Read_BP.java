@@ -108,15 +108,20 @@ public class Fragment_3_Read_BP extends Fragment implements ISlidePolicy {
             textViewDiastolic.setText("---");
             textViewPulse.setText("---");
         } else {
+            if(activity.bloodPressure[0]!=-1)
             textViewSystolic.setText(String.valueOf(activity.bloodPressure[0]));
+            if(activity.bloodPressure[1]!=-1)
             textViewDiastolic.setText(String.valueOf(activity.bloodPressure[1]));
+            if(activity.bloodPressure[2]!=-1)
             textViewPulse.setText(String.valueOf(activity.bloodPressure[2]));
         }
         if (activity.heartRate == null) {
             textViewPulseRate.setText("---");
             textViewIrregularPulse.setText("---");
         } else {
+            if(activity.heartRate[0]!=-1)
             textViewPulseRate.setText(String.valueOf(activity.heartRate[0]));
+            if(activity.heartRate[1]!=-1)
             textViewIrregularPulse.setText(String.valueOf(activity.heartRate[1]));
         }
         if (activity.battery == null) {

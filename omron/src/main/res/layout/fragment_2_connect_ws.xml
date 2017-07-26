@@ -65,6 +65,15 @@
             android:layout_weight=".5"
             android:background="@drawable/button_teal"
             android:text="Retry" />
+
+        <Button
+            android:id="@+id/button_2"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:layout_weight=".5"
+            android:background="@drawable/button_teal"
+            android:text="Manual Entry" />
     </LinearLayout>
 
 </LinearLayout>
